@@ -1,0 +1,1 @@
+//wywyływanie funkcja która zkleja wszystko w całość

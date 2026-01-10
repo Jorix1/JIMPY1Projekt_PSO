@@ -1,0 +1,1 @@
+// plik mózg obliczenia i algorytm pso cząstki i roju
