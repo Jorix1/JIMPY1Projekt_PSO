@@ -10,10 +10,11 @@ void wczytywanie (mapa *Teren,FILE *F ){ //zdefiniowanie funkcji wczytywanie x w
     int i ,j,k ;
 
     
-    fscanf(F,"%d %d",&Teren->H,&Teren->W);
+    fscanf(F,"%d %d",&Teren->H,&Teren->W);// zapisanie rozmiaru macierzy
     
-    int height = Teren->H;
+    int height = Teren->H;// dla ułatwienia
     int width = Teren->W;
+
     Teren ->Tablica = malloc(sizeof(double*)*height);
     for(k=0;k<height;k++) Teren->Tablica[k] = malloc(sizeof(double)*width);
     
@@ -26,6 +27,6 @@ void wczytywanie (mapa *Teren,FILE *F ){ //zdefiniowanie funkcji wczytywanie x w
         }
     }
     return;
-
+    
 }
 
