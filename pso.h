@@ -8,21 +8,22 @@ typedef struct
 {   
 
     
-    double **vx;
-    double **vy;
-    double *w;
-    double **c;
-    double **r;
-    int **x;
-    int **y;
-    int **pBest;
-    int gBest;
-    int LDron;
+    double vx[2];
+    double vy[2];
+    double w;
+    double c[2];
     
-}grupa;
+    int x[2];
+    int y[2];
+    double pBestVal;
+    int pBestX;
+    int pBestY;
+    
+    
+}dron;
 
-void pso(grupa *Drony,mapa *Teren,int iteracja,int nrDrona);
+void pso(dron *Drony[], mapa *Teren, int i, int gBestX, int gBestY);
 
-void Iterowanie(grupa *Drony,mapa *Teren,int iteracja);
+void Iterowanie(dron *Drony[], mapa *Teren, int iteracja, int liczbaDronow, double *gBestVal, int *gBestX, int *gBestY);
 
 #endif

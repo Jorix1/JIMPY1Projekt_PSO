@@ -1,27 +1,75 @@
-// plik mózg obliczenia i algorytm pso cząstki i roju
 #include <pso.h>
 #include <map.h>
+#include <stdlib.h>
+
+// POPRAWKA 1: Funkcja pso musi wiedzieć GDZIE jest gBest (X i Y), a nie ile wynosi.
+void pso(dron *Drony[], mapa *Teren, int i, int gBestX, int gBestY) {
+
+    dron *d = Drony[i];
+    
+    double w = d->w;
+    double *c = d->c;
+    
+    // Poprawne losowanie
+    double r1 = ((double) rand()) / RAND_MAX;
+    double r2 = ((double) rand()) / RAND_MAX;
+    
+    // Pobieramy współrzędne z drona
+    int *x = d->x;
+    int *y = d->y;
+
+    // --- OŚ X ---
+    double tempVx = d->vx[1];
+    int tempX = d->x[1];
+
+    
+    d->vx[1] = w * d->vx[0] + c[0] * r1 * (d->pBestX - x[1]) + c[1] * r2 * (gBestX - x[1]);
+    
+    d->vx[0] = tempVx; 
+    d->x[1] = x[1] + (int)d->vx[1];
+    d->x[0] = tempX;
+
+    // --- OŚ Y ---
+    double tempVy = d->vy[1];
+    int tempY = d->y[1];
 
 
+    d->vy[1] = w * d->vy[0] + c[0] * r1 * (d->pBestY - y[1]) + c[1] * r2 * (gBestY - y[1]);
 
-void pso(grupa *Drony,mapa *Teren,int iteracja,int nrDrona){
+    d->vy[0] = tempVy;
+    d->y[1] = y[1] + (int)d->vy[1];
+    d->y[0] = tempY;
+
+    // Zapewnienie, że dron nie wyjdzie poza mapę
+    if(d->x[1] < 0) d->x[1] = 0;
+    if(d->y[1] < 0) d->y[1] = 0;
+    // if(d->x[1] >= Teren->szerokosc) ... itd.
+
+
+    
+    double aktualnaWartosc = Teren->Tablica[d->y[1]][d->x[1]];
     
     
-
-    
-    Drony->vx[nrDrona][iteracja+1] = Drony->w[nrDrona]*Drony->vx[nrDrona][iteracja]+Drony->c[nrDrona][0]*Drony->r[nrDrona][0]*(Drony->pBest[nrDrona][0]-Drony->x[nrDrona][iteracja])+Drony->c[nrDrona][1]*Drony->r[nrDrona][1]*(Drony->gBest-Drony->x[nrDrona][iteracja]);
-    Drony->x[nrDrona][iteracja+1] = Drony->x[nrDrona][iteracja]+Drony->vx[nrDrona][iteracja];// obliczanie miejsca i prędkośći porusania się drona do g best dla wsp. X
-
-    Drony->vy[nrDrona][iteracja+1] = Drony->w[nrDrona]*Drony->vy[nrDrona][iteracja]+Drony->c[nrDrona][0]*Drony->r[nrDrona][0]*(Drony->pBest[nrDrona][0]-Drony->x[nrDrona][iteracja])+Drony->c[nrDrona][1]*Drony->r[nrDrona][1]*(Drony->gBest-Drony->x[nrDrona][iteracja]);
-    Drony->y[nrDrona][iteracja+1] = Drony->y[nrDrona][iteracja]+Drony->vy[nrDrona][iteracja];;// obliczanie miejsca i prędkośći porusania się drona do g best dla wsp. Y
-
-    if(Drony->pBest[nrDrona]<Teren->Tablica[Drony->x[nrDrona][iteracja+1]]) Drony->pBest[nrDrona] = Teren->Tablica[Drony->x[nrDrona][iteracja+1]];// jeśli obecne położenie dorna jest lepsze od najlepszego to zmieniamy pbest
-    if(Drony->pBest[nrDrona]<Drony->gBest) Drony->gBest = Drony->pBest[nrDrona];// sprawdzamy czy pbest jest lepsze od gbest
-
-
+    if(aktualnaWartosc > d->pBestVal) {
+        d->pBestVal = aktualnaWartosc; // Zapisz wartość
+        d->pBestX = d->x[1];           // Zapisz GDZIE to było (X)
+        d->pBestY = d->y[1];           // Zapisz GDZIE to było (Y)
+    }
 }
-void Iterowanie(grupa *Drony,mapa *Teren,int iteracja){
-    for(int i=0;i<Drony->LDron;i++){
-        pso(Drony,Teren,iteracja,i);// przechodzimy po wszystkich dronach dla iteracji 
+
+// POPRAWKA 2: Iterowanie musi przyjmować wskaźniki, żeby móc ZMIENIĆ gBest
+// Przekazujemy wskaźniki na gBestVal, gBestX i gBestY
+void Iterowanie(dron *Drony[], mapa *Teren, int iteracja, int liczbaDronow, double *gBestVal, int *gBestX, int *gBestY) {
+    
+    for(int i = 0; i < liczbaDronow; i++) {
+        
+        pso(Drony, Teren, i, *gBestX, *gBestY);
+
+        
+        if(Drony[i]->pBestVal > *gBestVal) {
+            *gBestVal = Drony[i]->pBestVal; // Nowy rekord wartości
+            *gBestX = Drony[i]->pBestX;     // Nowe miejsce rekordu X
+            *gBestY = Drony[i]->pBestY;     // Nowe miejsce rekordu Y
+        }
     }
 }
