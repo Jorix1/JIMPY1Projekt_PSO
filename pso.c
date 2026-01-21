@@ -2,7 +2,7 @@
 #include <map.h>
 #include <stdlib.h>
 
-// POPRAWKA 1: Funkcja pso musi wiedzieć GDZIE jest gBest (X i Y), a nie ile wynosi.
+
 void pso(dron *Drony[], mapa *Teren, int i, int gBestX, int gBestY) {
 
     dron *d = Drony[i];
@@ -10,7 +10,7 @@ void pso(dron *Drony[], mapa *Teren, int i, int gBestX, int gBestY) {
     double w = d->w;
     double *c = d->c;
     
-    // Poprawne losowanie
+    //  losowanie liczb r1 i r2 z przedziału [0,1]
     double r1 = ((double) rand()) / RAND_MAX;
     double r2 = ((double) rand()) / RAND_MAX;
     
@@ -57,8 +57,7 @@ void pso(dron *Drony[], mapa *Teren, int i, int gBestX, int gBestY) {
     }
 }
 
-// POPRAWKA 2: Iterowanie musi przyjmować wskaźniki, żeby móc ZMIENIĆ gBest
-// Przekazujemy wskaźniki na gBestVal, gBestX i gBestY
+
 void Iterowanie(dron *Drony[], mapa *Teren, int iteracja, int liczbaDronow, double *gBestVal, int *gBestX, int *gBestY) {
     
     for(int i = 0; i < liczbaDronow; i++) {
