@@ -21,7 +21,12 @@ typedef struct
     
     
 }dron;
-
+typedef struct
+{
+    int gBestSignal;
+    int gBestX;
+    int gBestY;
+}grupa;
 void pso(dron *Drony[], mapa *Teren, int i, int gBestX, int gBestY);
 
 void Iterowanie(dron *Drony[], mapa *Teren, int iteracja, int liczbaDronow, double *gBestVal, int *gBestX, int *gBestY);

@@ -58,17 +58,17 @@ void pso(dron *Drony[], mapa *Teren, int i, int gBestX, int gBestY) {
 }
 
 
-void Iterowanie(dron *Drony[], mapa *Teren, int iteracja, int liczbaDronow, double *gBestVal, int *gBestX, int *gBestY) {
+void Iterowanie(dron *Drony[], mapa *Teren,grupa *Roj ,int iteracja, int liczbaDronow) {
     
     for(int i = 0; i < liczbaDronow; i++) {
         
-        pso(Drony, Teren, i, *gBestX, *gBestY);
+        pso(Drony, Teren, i, Roj->gBestX, Roj->gBestY);
 
         
-        if(Drony[i]->pBestVal > *gBestVal) {
-            *gBestVal = Drony[i]->pBestVal; // Nowy rekord wartości
-            *gBestX = Drony[i]->pBestX;     // Nowe miejsce rekordu X
-            *gBestY = Drony[i]->pBestY;     // Nowe miejsce rekordu Y
+        if(Drony[i]->pBestVal > Roj->gBestSignal) {
+            Roj->gBestSignal = Drony[i]->pBestVal;
+            Roj->gBestX = Drony[i]->pBestX;
+            Roj->gBestY = Drony[i]->pBestY;
         }
     }
 }
