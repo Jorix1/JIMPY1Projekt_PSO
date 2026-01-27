@@ -31,7 +31,7 @@ typedef struct
 
 void init_grupa(grupa *grupa, int liczbaDronow, mapa *mapa);
 
-void update_grupa(grupa *grupa, mapa *mapa);
+void update_grupa(grupa *grupa, mapa *mapa,int i);
 
 void free_grupa(grupa *grupa);
 
