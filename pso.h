@@ -1,34 +1,38 @@
 #ifndef PSO_H
 #define PSO_H
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "map.h"
 
 typedef struct 
-{   
+{      
+    double x;
+    double y; 
+    double vx;
+    double vy;
 
-    
-    double vx[2];
-    double vy[2];
-    double w;
-    double c[2];
-    
-    int x[2];
-    int y[2];
     double pBestVal;
-    int pBestX;
-    int pBestY;
-    
-    
+    double pBestX;
+    double pBestY;
 }dron;
+
 typedef struct
 {
-    int gBestSignal;
-    int gBestX;
-    int gBestY;
-}grupa;
-void pso(dron *Drony[], mapa *Teren, int i, int gBestX, int gBestY);
+    dron *drony;
+    int liczbaDronow;
 
-void Iterowanie(dron *Drony[], mapa *Teren, int iteracja, int liczbaDronow, double *gBestVal, int *gBestX, int *gBestY);
+    double gBestVal;
+    double gBestX;
+    double gBestY;
+
+    double w;
+    double c1;
+    double c2;
+}grupa;
+
+void init_grupa(grupa *grupa, int liczbaDronow, mapa *mapa);
+
+void update_grupa(grupa *grupa, mapa *mapa);
+
+void free_grupa(grupa *grupa);
 
 #endif
