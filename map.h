@@ -1,9 +1,6 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <stdio.h>
-#include <stdlib.h>
-
 typedef struct
 {
     int H;
@@ -11,6 +8,10 @@ typedef struct
     double **Tablica;
 }mapa;
 
-void wczytywanie (mapa *Teren,FILE *F );
+int wczytaj_mape(mapa *Teren, char *nazwa_pliku);
+
+void zwolnij_mape(mapa *Teren);
+
+double pobierz_wartosc(mapa *Teren, double x, double y);
 
 #endif
