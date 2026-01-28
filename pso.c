@@ -3,72 +3,90 @@
 #include <stdlib.h>
 
 
-void pso(dron *Drony[], mapa *Teren, int i, int gBestX, int gBestY) {
 
-    dron *d = Drony[i];
+
+void init_grupa(grupa *grupa, int liczbaDronow, mapa *mapa){
+    int maxH = mapa->H;
+    int maxW = mapa->W;
+    grupa->drony = malloc(liczbaDronow*sizeof(dron));// maloc na całe drony
+    for(int i =0;i<liczbaDronow;i++){
+        
+        
+        grupa->drony[i].x = rand()%maxW;// losowe x i y wsp na mapie
+        grupa->drony[i].y = rand()%maxH;
+
+        grupa->drony[i].vx = (((double)rand() / RAND_MAX) * maxW) - (maxW/2);// losowa prędokść x i y
+        grupa->drony[i].vx = (((double)rand() / RAND_MAX) * maxH) - (maxH/2);
+
+        grupa->drony[i].pBestX = grupa->drony->x;// nie ma innych p best więc to jest najlepsza
+        grupa->drony[i].pBestY = grupa->drony->y;
+
+        grupa->drony[i].pBestVal = mapa->Tablica[(int)grupa->drony[i].x][(int)grupa->drony[i].y];// wartość na mapie
+
+        if(grupa->gBestVal<grupa->drony[i].pBestVal){// sprawdza czy  obecna pozycja jest najlepsza z grupy
+            grupa->gBestVal = grupa->drony->pBestVal;
+            grupa->gBestX = grupa->drony[i].pBestX;
+            grupa->gBestY = grupa->drony[i].pBestY;
+
+        }
+
+    }    
+
+
+}
+void update_grupa(grupa *grupa, mapa *mapa,int i){
+
+        
     
-    double w = d->w;
-    double *c = d->c;
+    
     
     //  losowanie liczb r1 i r2 z przedziału [0,1]
     double r1 = ((double) rand()) / RAND_MAX;
     double r2 = ((double) rand()) / RAND_MAX;
     
     // Pobieramy współrzędne z drona
-    int *x = d->x;
-    int *y = d->y;
+    int x = grupa->drony[i].x;
+    int y = grupa->drony[i].y;
 
     // --- OŚ X ---
-    double tempVx = d->vx[1];
-    int tempX = d->x[1];
+    
 
     
-    d->vx[1] = w * d->vx[0] + c[0] * r1 * (d->pBestX - x[1]) + c[1] * r2 * (gBestX - x[1]);
+    grupa->drony[i].vx = grupa->w *grupa->drony[i].vx  + grupa->c1 * r1 * (grupa->drony->pBestX - x) + grupa->c2 * r2 * (grupa->gBestX - x);
     
-    d->vx[0] = tempVx; 
-    d->x[1] = x[1] + (int)d->vx[1];
-    d->x[0] = tempX;
+    
+    grupa->gBestX = x + (int)grupa->drony[i].vx;
+    
 
     // --- OŚ Y ---
-    double tempVy = d->vy[1];
-    int tempY = d->y[1];
+    
 
 
-    d->vy[1] = w * d->vy[0] + c[0] * r1 * (d->pBestY - y[1]) + c[1] * r2 * (gBestY - y[1]);
+    grupa->drony[i].vy = grupa->w * grupa->drony[i].vy + grupa->c1 * r1 * (grupa->gBestY - y) + grupa->c2 * r2 * (grupa->drony[i].pBestY - y);
 
-    d->vy[0] = tempVy;
-    d->y[1] = y[1] + (int)d->vy[1];
-    d->y[0] = tempY;
+    
+    grupa->drony[i].y = grupa->drony[i].y + (int)grupa->drony[i].vy;
+    
 
     // Zapewnienie, że dron nie wyjdzie poza mapę
-    if(d->x[1] < 0) d->x[1] = 0;
-    if(d->y[1] < 0) d->y[1] = 0;
+    if(grupa->drony[i].x < 0)grupa->drony[i].x = 0;
+    if(grupa->drony[i].y < 0) grupa->drony[i].y = 0;
     // if(d->x[1] >= Teren->szerokosc) ... itd.
 
 
     
-    double aktualnaWartosc = Teren->Tablica[d->y[1]][d->x[1]];
+    double aktualnaWartosc = mapa->Tablica[(int)grupa->drony[i].y][(int)grupa->drony[i].x];
     
     
-    if(aktualnaWartosc > d->pBestVal) {
-        d->pBestVal = aktualnaWartosc; // Zapisz wartość
-        d->pBestX = d->x[1];           // Zapisz GDZIE to było (X)
-        d->pBestY = d->y[1];           // Zapisz GDZIE to było (Y)
+    if(aktualnaWartosc > grupa->drony[i].pBestVal) {
+        grupa->drony[i].pBestVal = aktualnaWartosc; // Zapisz wartość
+        grupa->drony[i].pBestX = x;           // Zapisz GDZIE to było (X)
+        grupa->drony[i].pBestY = y;           // Zapisz GDZIE to było (Y)
     }
 }
 
-
-void Iterowanie(dron *Drony[], mapa *Teren,grupa *Roj ,int iteracja, int liczbaDronow) {
-    
-    for(int i = 0; i < liczbaDronow; i++) {
-        
-        pso(Drony, Teren, i, Roj->gBestX, Roj->gBestY);
-
-        
-        if(Drony[i]->pBestVal > Roj->gBestSignal) {
-            Roj->gBestSignal = Drony[i]->pBestVal;
-            Roj->gBestX = Drony[i]->pBestX;
-            Roj->gBestY = Drony[i]->pBestY;
-        }
+void free_grupa(grupa *grupa){// zwalnianie tablicy dronow
+    for(int i =0;i<grupa->liczbaDronow;i++){
+        free(grupa->drony);
     }
 }
