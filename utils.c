@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "pso.h"
 
 void plikKonfi(char *nazwaPliku){
     srand(time(NULL));
@@ -10,6 +11,27 @@ void plikKonfi(char *nazwaPliku){
     double c1 = (double) rand() / RAND_MAX;// generowanie wspolczynnika przyciagania do najlepszego rozwiazania czasteczki
     double c2 = (double) rand() / RAND_MAX;
     fprintf(f,"%lf %lf %lf\n",w,c1,c2);
+}
 
-    
+void wczytaj_konfiguracje(char *nazwa_pliku, grupa *grupa){
+    grupa->w = 0.5;
+    grupa->c1 = 1.0;
+    grupa->c2 = 1.0;
+
+    if (nazwa_pliku == NULL) return; 
+
+    FILE *f = fopen(nazwa_pliku, "r");
+    if (f == NULL) {
+        printf("Nie udalo sie otworzyc pliku config");
+        return;
+    }
+
+    if (fscanf(f, "%lf %lf %lf", &grupa->w, &grupa->c1, &grupa->c2) != 3) {
+        printf("Blad formatu pliku config. Uzywam domyslnych.\n");
+        grupa->w = 0.5;
+        grupa->c1 = 1.0;
+        grupa->c2 = 1.0;
+    }
+
+    fclose(f);
 }
