@@ -1,7 +1,7 @@
 #include <pso.h>
 #include <map.h>
 #include <stdlib.h>
-
+#include "map.h"
 
 
 
@@ -67,16 +67,18 @@ void update_grupa(grupa *grupa, mapa *mapa,int i){
     
     grupa->drony[i].y = grupa->drony[i].y + (int)grupa->drony[i].vy;
     
-
+    double aktualnaWartosc;
     // Zapewnienie, że dron nie wyjdzie poza mapę
-    if(grupa->drony[i].x < 0)grupa->drony[i].x = 0;
-    if(grupa->drony[i].y < 0) grupa->drony[i].y = 0;
+    if(grupa->drony[i].x < 0||grupa->drony[i].x > mapa->H|| grupa->drony[i].y < 0|| grupa->drony[i].y > mapa->W)
+         aktualnaWartosc = pobierz_wartosc(mapa,x,y);
+    
     // if(d->x[1] >= Teren->szerokosc) ... itd.
 
 
+    else 
+        aktualnaWartosc = mapa->Tablica[(int)grupa->drony[i].y][(int)grupa->drony[i].x];
     
-    double aktualnaWartosc = mapa->Tablica[(int)grupa->drony[i].y][(int)grupa->drony[i].x];
-    
+
     
     if(aktualnaWartosc > grupa->drony[i].pBestVal) {
         grupa->drony[i].pBestVal = aktualnaWartosc; // Zapisz wartość

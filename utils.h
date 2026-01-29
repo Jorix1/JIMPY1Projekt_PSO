@@ -5,7 +5,8 @@
 #include <time.h>
 #include "pso.h"
 
-void plikKonfi(char *nazwaPliku,grupa *grupa);//grupa po to by zapisywać
+void plikKonfi(char *nazwaPliku);
+void wczytaj_konfiguracje(char *nazwa_pliku, grupa *grupa);
 
 
 #endif

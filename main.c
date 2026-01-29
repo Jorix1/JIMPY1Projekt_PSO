@@ -1,54 +1,74 @@
-//wywyływanie funkcja która zkleja wszystko w całość
-
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "pso.h"
+#include <string.h>
 #include "map.h"
-#include "utils.h"
+#include "pso.h"
 #include "Logger.h"
+#include "utils.h"
 
+int main(int argc, char *argv[]){
+    if (argc < 2) {
+        printf("Sposob wywołania: %s <plik_mapy> [-p liczba_dronow] [-i iteracje] [-c plik_config] [-n logowanie]\n", argv[0]);
+        return 1;
+    }
 
-int main(int argc, char **argv){
-
-    struct mapa * Teren = malloc(sizeof(mapa));
-    struct grupa *Grupa = malloc(sizeof(grupa)); // maloc na gurpę i teren
-
-    // faza inicjalizacji wczytanie mapy i grupy
-
-    int liczbaDr = atoi(argv[]);
-    int liczbaIter = atoi(argv[]);
-    int CoIleZapis = atoi (argv[]); // wartości liczba dronow liczba iteracji etc. dla wygody
-    int i = 0, j = 0;
-
-    char *nazwaPlikuZapisu = argv[]; // tu plik zapisywania
-    char *nazwaMapa = argv[];       // tu plik mapa
-    char *nazwaPlikKonfi = argv[]; // tu plik konfiguracyjny z c1 c2 i w
+    char *plik_mapy = argv[1];   
+    int liczba_dronow = 30;    
+    int liczba_iteracji = 100;   
+    char *plik_config = NULL;    
+    int log_co_ile = 0;
     
+    for (int i = 2; i < argc; i++) {
+        if (strcmp(argv[i], "-p") == 0 && i + 1 < argc) {
+            liczba_dronow = atoi(argv[i + 1]);
+            i++;
+        } 
+        else if (strcmp(argv[i], "-i") == 0 && i + 1 < argc) {
+            liczba_iteracji = atoi(argv[i + 1]);
+            i++;
+        }
+        else if (strcmp(argv[i], "-c") == 0 && i + 1 < argc) {
+            plik_config = argv[i + 1];
+            i++;
+        }
+        else if (strcmp(argv[i], "-n") == 0 && i + 1 < argc) {
+            log_co_ile = atoi(argv[i + 1]);
+            i++;
+        }
+    }
 
+    mapa teren;
+    if (wczytaj_mape(&teren, plik_mapy) == EXIT_FAILURE) {
+        printf("nie udało się wczytać mapy");
+        return 1;
+    }
 
-    wczytaj_mape(Teren, nazwaMapa);           
-    init_grupa(Grupa, liczbaDr, Teren);         
-    plikKonfi(nazwaPlikKonfi, Grupa);
-    wyczysc_plik_logu(nazwaPlikuZapisu); //wczytywanie mapy zapisywanie wartośći losowych dla dronów etc.
+    grupa grupa;
+    wczytaj_konfiguracje(plik_config, &grupa);
 
+    init_grupa(&grupa, liczba_dronow, &teren);
 
-   for(i=0;i<liczbaIter;i++){
+    char *nazwa_logu = "wyniki.csv";
+    if (log_co_ile > 0) {
+        wyczysc_plik_logu(nazwa_logu);
+        zapisz_pozycje(nazwa_logu, &grupa, 0);
+    }
 
-        for(j=0; j<liczbaDr; j++){
-            update_grupa(Grupa,Teren,j);
+    for (int t = 1; t <= liczba_iteracji; t++) {
+        for(int i = 0; i < grupa.liczbaDronow; i++){
+            update_grupa(&grupa, &teren, i);
         }
 
-        
-        if((i+1)%CoIleZapis==0) zapisz_pozycje(nazwaPlikuZapisu,Grupa,i); // warunek dla zapisywania pozycji co ile 
-   }
+        if (log_co_ile > 0 && (t % log_co_ile == 0)) {
+            zapisz_pozycje(nazwa_logu, &grupa, t);
+        }
+    }
+    
+    printf("\n--- WYNIK ---\n");
+    printf("Najlepszy znaleziony sygnał: %lf\n", grupa.gBestVal);
+    printf("Współrzędne celu: X = %lf, Y = %lf\n", grupa.gBestX, grupa.gBestY);
 
-   free_grupa(Grupa); // funkcje które zwalniają pamięć
-   zwolnij_mape(Teren);
-
-   free(Grupa);
-   free(Teren);
-
-   return 0;
-
+    free_grupa(&grupa);
+    zwolnij_mape(&teren);
+    return 0;
 }
