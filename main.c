@@ -1,14 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h> 
+
 #include "map.h"
 #include "pso.h"
 #include "Logger.h"
 #include "utils.h"
 
 int main(int argc, char *argv[]){
+
+    setlocale(LC_NUMERIC, "C");
+
     if (argc < 2) {
-        printf("Sposob wywołania: %s <plik_mapy> [-p liczba_dronow] [-i iteracje] [-c plik_config] [-n logowanie]\n", argv[0]);
+        printf("Sposob wywołania: %s <plik_mapy> [-p liczba_dronow] [-i iteracje] [-c plik_config] [-n częstotliwość_zapisu]\n", argv[0]);
         return 1;
     }
 
@@ -42,13 +47,19 @@ int main(int argc, char *argv[]){
         printf("nie udało się wczytać mapy");
         return 1;
     }
+   
+
+    
 
     grupa grupa;
-    wczytaj_konfiguracje(plik_config, &grupa);
+    
+    plikKonfi(plik_config);                         // losowanie wartość c1 c2 w etc
+    
+    wczytaj_konfiguracje(plik_config, &grupa);      // wczytywanie konfiguracji (robi c1 c2 w )
 
     init_grupa(&grupa, liczba_dronow, &teren);
 
-    char *nazwa_logu = "wyniki.csv";
+    char *nazwa_logu = "wyniki.csv"; // plik z danymi
     if (log_co_ile > 0) {
         wyczysc_plik_logu(nazwa_logu);
         zapisz_pozycje(nazwa_logu, &grupa, 0);
@@ -58,9 +69,10 @@ int main(int argc, char *argv[]){
         for(int i = 0; i < grupa.liczbaDronow; i++){
             update_grupa(&grupa, &teren, i);
         }
-
+        
         if (log_co_ile > 0 && (t % log_co_ile == 0)) {
             zapisz_pozycje(nazwa_logu, &grupa, t);
+            
         }
     }
     
@@ -70,5 +82,6 @@ int main(int argc, char *argv[]){
 
     free_grupa(&grupa);
     zwolnij_mape(&teren);
+    
     return 0;
 }
